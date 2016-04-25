@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+            <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+            
+			<link rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.5.min.css">
+			<script src="js/jquery.js"></script>
+			<script src="js/jquery.mobile-1.4.5.min.js"></script>
+			
+			<title>Multa Ciudadana</title>
+			
+			<style type="text/css">            
+            #map_canvas { width:100%; height:300px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);}			
+            </style>
+			
+            <script>
+
+			var pictureSource; 
+            var destinationType;
+			
+			// Conexion de Cordova con dispositivo
+            document.addEventListener("deviceready", dispositivoListo, false);
+			
+			var MiCarpeta = 'FotosMulta';			
+			var _fp
+			
+				var _root
+                var _workingFolder
+                var _imagePath
+                var _localImagePath
+	 
+                 function dispositivoListo(){                     
+					 window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, accesoFS, error);
+                 }
+				 				 
+                function accesoFS(fileSystem) {
+					var directoryEntry = fileSystem.root;
+                    directoryEntry.getDirectory(MiCarpeta, {create: true, exclusive: false},function(myfolder){                                                 
+                                                 _workingFolder = myfolder;	
+                                                 })
+                    
+                    _root = fileSystem.root
+					//_fp = fileSystem.root.toNativeURL();
+                }
+				
+
+				
+                function copiarFoto() {							
+                    window.resolveLocalFileSystemURI(_imagePath,function(fileEntry){
+
+					alert(_imagePath)
+					alert(_workingFolder)
+							fileEntry.copyTo(_workingFolder , "Multa"+ Math.random() +".jpg" ,function(e){                                                   
+											_localImagePath = e;
+											
+											alert(_localImagePath)
+											
+											var imagen = document.getElementById("imagenGuardada")
+											imagen.src = _localImagePath.fullPath;
+											
+											alert(_localImagePath.fullPath)
+											
+											alert("ruta de guardado" + _localImagePath.fullPath)
+											} , function(e){ alert(e)});
+							
+							
+							
+							},
+							function(je){alert("fallo en la escritura"+je.code)}  );
+					
+                }				 
+				 				
+//CAMARA ///////////////////////////////////////////////////////////////
+				function tomarFoto(){
+                    navigator.camera.getPicture(mostrarFoto, error, { 
+					quality : 80, 
+					destinationType : Camera.DestinationType.FILE_URI,   
+					sourceType : Camera.PictureSourceType.CAMERA,   
+					allowEdit : true,  
+					encodingType: Camera.EncodingType.JPEG,  
+					targetWidth: 100,  targetHeight: 100 } );
+                }
+			
+				function error(message) {
+                    alert('error al cargar la imagen: ' + message);
+                }
+                                             
+                function mostrarFoto(param){
+                    
+                    var imagen = document.getElementById("imagen")
+                    imagen.src = param;
+                    _imagePath = param;
+					alert(param)
+                    
+                }
+				
+// Abre galería de fotos
+				function AbreGaleria(){
+					navigator.camera.getPicture(mostrarFoto, error, { 
+						quality: 80,
+						sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
+						targetWidth: 200,  targetHeight: 200,
+						destinationType: Camera.DestinationType.FILE_URI});
+
+				}		
+
+	
+// CONEXION ///////////////////////////////////////////////////////////////
+
+                function mostrarConexion() {
+                        
+                        var networkState = navigator.network.connection.type;
+                        
+                        if (networkState == Connection.NONE){
+                            alert("no hay conexion a internet")
+                        }
+                } 
+                
+            </script>
+
+			<!-- API GoogleMaps -->
+			<script type="text/javascript" 
+			src="http://maps.googleapis.com/maps/api/js?sensor=true">
+			</script>
+
+			<!-- Geolocalización -->	
+			<script type="text/javascript">
+            
+            var map
+            var marcador
+            
+            function initialize() {
+                var latlng = new google.maps.LatLng(25.50, -100.975);
+                var myOptions = {
+                    zoom: 12,
+                    center: latlng,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
+                map = new google.maps.Map(document.getElementById("map_canvas"),
+                                          myOptions);
+                
+                
+                marcador = new google.maps.Marker( {
+                                                  position: latlng,
+                                                  map:map   
+                                                  })
+												  
+				navigator.geolocation.getCurrentPosition( lecturaGPS , errorGPS , {enableHighAccuracy:true} )
+            }
+            
+            function mostrarUbicacion(){
+                navigator.geolocation.getCurrentPosition( lecturaGPS , errorGPS , {enableHighAccuracy:true} )
+            }
+            
+            function lecturaGPS(ubicacion){
+                
+                var miubicacion = new google.maps.LatLng(ubicacion.coords.latitude, ubicacion.coords.longitude);
+                
+                map.setCenter(miubicacion)
+                marcador.setPosition(miubicacion)
+                alert(" Ubicacion" + miubicacion)
+            }
+            
+            function errorGPS(){
+                alert(" no puedo encontrarte :(")
+            }
+             
+            </script> 
+			
+	
+    </head>
+    <body onLoad="initialize()" >
+	
+<div align="center" data-role="page" id="inicio" style="background-color:#7a0505;">	
+
+	<div data-role="header" style="background-color:#d17272;">    
+		<h1>Multa Ciudadana</h1>
+	</div>
+	
+	<div id="map_canvas"></div>
+	
+	<a href="#" class="ui-shadow ui-btn ui-corner-all ui-icon-recycle ui-btn-icon-notext" onClick="mostrarUbicacion()">Actualizar</a>
+
+	<div id="MenuPrincipal" style="width:95%;">			
+		<div id="menubotones">
+		<a href="#pantalla2" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-icon-alert ui-btn-icon-top" style="width:120px;">Multa Ciudadana</a>
+		<a href="#pantalla2" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-icon-star ui-btn-icon-top" style="width:120px">SIIF</a>
+		<a href="#pantalla2" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-icon-comment ui-btn-icon-top" style="width:120px">Comentarios</a>
+		<a href="#pantalla2" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-icon-info ui-btn-icon-top" style="width:120px">Ayuda</a>	
+		</div>    
+	</div>
+
+</div>
+
+<div data-role="page" id="pantalla2">      
+	<div data-role="header" style="background-color:#9accff;">    
+		<h1>Multa Ciudadana</h1>
+	</div>
+
+	<div data-demo-html="true">
+        <fieldset data-role="controlgroup">                    
+			<input type="radio" name="radio-choice-1" id="radio-choice-1" value="choice-1" checked="checked">
+			<label for="radio-choice-1">Reportar Bache</label>
+	
+			<input type="radio" name="radio-choice-1" id="radio-choice-2" value="choice-2">
+			<label for="radio-choice-2">Tránsito</label>
+	
+			<input type="radio" name="radio-choice-1" id="radio-choice-3" value="choice-3">
+			<label for="radio-choice-3">Salud</label>
+	
+			<input type="radio" name="radio-choice-1" id="radio-choice-4" value="choice-4">
+			<label for="radio-choice-4">Forestal</label>
+        </fieldset>
+       </div><!-- /demo-html -->
+
+<button onclick="tomarFoto()" id="B"> Tomar Foto </button>
+<button onclick="AbreGaleria()" id="T">Cargar Foto </button>
+
+	<div>	
+    <img id="imagen" src="" />	
+	<button onclick="copiarFoto()"> Enviar Foto </button>
+	<img id="imagenGuardada" src="" />
+	</div>
+
+<a href="#" class="ui-shadow ui-btn ui-corner-all ui-icon-arrow-l ui-btn-icon-left" data-rel="back" > Volver </a>
+</div>
+
+
+<!--
+	<div>
+		<h3>Ubicación del dispositivo</h3>  
+		<button onClick="initialize()">  Ver Mapa</button> 
+		<div id="map_canvas"></div> 
+		<button onClick="mostrarUbicacion()"> Actualizar Ubicación</button>
+	</div>
+-->	
+    </body>
+</html>
