@@ -3,110 +3,248 @@
     <head>
         <meta charset="utf-8">
             <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
-            <title>Ejercicio 19.2</title>
-            <style>
-                body{text-align:center;}
-                button{ width:95%; height:35px}
-                h2{ font-size:14px}
+            
+			<link rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.5.min.css">
+			<script src="js/jquery.js"></script>
+			<script src="js/jquery.mobile-1.4.5.min.js"></script>
+			
+			<title>InspeccionMovil</title>			
+			
+			<style type="text/css">
+			#Home	{
+						background-color:#fff;
+					}
+			
+			#Header {
+						background-color:#61c1df;
+					}
+							
+            #Contenedor_ImgInicio	{
+								position: absolute;
+								width: 80%;
+								height: 60%;
+								background-color:#fff;
+							}					
+
+			#ImgInicio	{														
+								width: auto;
+								height : auto;
+								max-height: 100%;
+								max-width: 100%;										
+							}	
+							
+			#Contenedor_MenuHome	{
+							float: right;							
+							margin-top: 60%;
+							width:150px;							
+							z-index: 2;
+						}
+			
+			#MenuHome	{
+						
+						}
+			
+			
+			#Contenedor_map_canvas	{
+							position: fixed;
+							bottom: 1px;
+							width:100%; 
+							height:180px; 							
+						}
+			
+			#map_canvas { 
+							width:100%; 
+							height:180px; 														
+						}
+			
+			#Contenedor_imagenCapturada	{								
+								width: 80%;
+								height: 80%;
+								background-color:#fff;
+							}
+
+			#imagenCapturada	{														
+									width: auto;
+									height : auto;
+									max-height: 100%;
+									max-width: 100%;										
+								}				
+			
+			#Contenedor_BtnVolver	{
+							position: fixed;
+							bottom: 10px;
+						}
+			
             </style>
+			
             <script>
-                
-                var pictureSource;   // picture source
-                var destinationType; // sets the format of returned value
-                
-                // Wait for Cordova to connect with the device
-                //
-                document.addEventListener("deviceready",onDeviceReady,false);
-                
-                var _root
+
+			var pictureSource; 
+            var destinationType;
+			
+			// Conexion de Cordova con dispositivo
+            document.addEventListener("deviceready", dispositivoListo, false);
+			
+				var _root
                 var _workingFolder
                 var _imagePath
                 var _localImagePath
-                
-                function onDeviceReady() {
-                    //solicita acceso al filesystem
-                    
-                    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, accesoFS, error);
-                }
-                
-                // tenemos acceso al filesystem
+	 
+                 function dispositivoListo(){                     
+					 window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, accesoFS, error);
+                 }
+				 				 
                 function accesoFS(fileSystem) {
-                    // busca o crea el directorio
-                    fileSystem.root.getDirectory("manualDelGuerreroMovil", {create: true, exclusive: false},function(myfolder){
-                                                 /// define el objeto del folder para utilizarlo posteriormente
-                                                 _workingFolder = myfolder;
-                                                 alert("folder")
+					var directoryEntry = fileSystem.root;
+                    directoryEntry.getDirectory(MiCarpeta, {create: true, exclusive: false},function(myfolder){                                                 
+                                                 _workingFolder = myfolder;	
                                                  })
                     
                     _root = fileSystem.root
-                    
+					//_fp = fileSystem.root.toNativeURL();
                 }
-                
-                 
-                
-                function copiarFoto() {
-                    
-                    
-                    
-                     
-                    
-                    window.resolveLocalFileSystemURI(_imagePath,function(fileEntry){
-                                                                                                          
-                                                     fileEntry.copyTo(_workingFolder , "miImagen"+ Math.random() +".jpg" ,function(e){ 
-                                                                      
-                                                                      _localImagePath = e;
-                                                                      var imagen = document.getElementById("imagenGuardada")
-                                                                      imagen.src = _localImagePath.fullPath;
-                                                                      
-                                                                      } , function(e){ alert(e)});
-                                                     
-                                                    
-                                                     
-                                                     },
-                                                     function(je){alert("fallo en la escritura"+je.code)}  );
-                    
-                    
+							
+				 				
+		//CAMARA ///////////////////////////////////////////////////////////////
+				function tomarFoto(){
+                    navigator.camera.getPicture(mostrarFoto, error, { 
+					quality : 80, 
+					destinationType : Camera.DestinationType.FILE_URI,   
+					sourceType : Camera.PictureSourceType.CAMERA
+					} );
                 }
-                
-                
-                
-                //////////
-                
-                
-                
-                
-                function error(message) {
-                    alert('error al tomar la foto : ' + message);
+			
+				function error(message) {
+                    alert('error al cargar la imagen: ' + message);
                 }
-                
-                function tomarFoto(){
-                    navigator.camera.getPicture( mostrarFoto, error, { quality : 75, destinationType : Camera.DestinationType.FILE_URI,   sourceType : Camera.PictureSourceType.CAMERA,   allowEdit : true,  encodingType: Camera.EncodingType.JPEG,  targetWidth: 100,  targetHeight: 100 } );
-                }
-                
+                                             
                 function mostrarFoto(param){
                     
-                    var imagen = document.getElementById("imagen")
+                    var imagen = document.getElementById("imagenCapturada")
                     imagen.src = param;
                     _imagePath = param;
-                    
+					//alert(param)                  
                 }
+				
+				function EnviarFoto(){                    					
+					mostrarUbicacion();
+					//var imagen = document.getElementById("imagenCapturada")                    
+					//alert(imagen.src);
+                }
+	
+			// CONEXION ///////////////////////////////////////////////////////////////
+
+                function mostrarConexion() {
+                        
+                        var networkState = navigator.network.connection.type;
+                        
+                        if (networkState == Connection.NONE){
+                            alert("no hay conexion a internet")
+                        }
+                } 
+                
+            </script>
+
+			<!-- API GoogleMaps -->
+			<script type="text/javascript" 
+			src="http://maps.googleapis.com/maps/api/js?sensor=true">
+			</script>
+
+			<!-- Geolocalización -->	
+			<script type="text/javascript">
+            
+            var map
+            var marcador
+            
+            function initialize() {
+                var latlng = new google.maps.LatLng(25.50, -100.975);
+                var myOptions = {
+                    zoom: 12,
+                    center: latlng,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
+                map = new google.maps.Map(document.getElementById("map_canvas"),
+                                          myOptions);
                 
                 
-                </script>
-            </head>
-    <body >
-        
-        <button onclick="tomarFoto()"> Tomar Fotografia </button>
-        <h2> Captura:</h2>
-        <img id="imagen" src="" />
-        
-        <hr>
-        <button onclick="copiarFoto()"> Guardar imagen </button>
-       
-        
-        <h2> Ultima imagen guardada:</h2>
-        <img id="imagenGuardada" src="" />
-        
-        
+                marcador = new google.maps.Marker( {
+                                                  position: latlng,
+                                                  map:map   
+                                                  })
+												  
+				navigator.geolocation.getCurrentPosition( lecturaGPS , errorGPS , {enableHighAccuracy:true} )
+            }
+            
+            function mostrarUbicacion(){
+                navigator.geolocation.getCurrentPosition( lecturaGPS , errorGPS , {enableHighAccuracy:true} )
+            }
+            
+            function lecturaGPS(ubicacion){
+                
+                var miubicacion = new google.maps.LatLng(ubicacion.coords.latitude, ubicacion.coords.longitude);
+                
+                map.setCenter(miubicacion)
+                marcador.setPosition(miubicacion)
+                alert(" Ubicacion" + miubicacion)
+            }
+            
+            function errorGPS(){
+                alert(" no puedo encontrarte :(")
+            }
+             
+            </script> 
+			
+	
+    </head>
+    <body onLoad="initialize()" >
+
+<!-- HOME -->
+	
+<div id="Home" data-role="page" >	
+
+	<div data-role="header">    
+		<h1>Inspección Móvil</h1>
+	</div>
+	
+	<div id="Contenedor_ImgInicio">
+		
+			<img id="ImgInicio" src="img/Banio_Inicio.gif"/>
+		
+	</div>
+	
+	<div id="Contenedor_MenuHome">			
+		<div id="MenuHome">
+			<a href="#pantalla2" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-mini ui-icon-search ui-btn-icon-top">Registrar Inspección</a>
+			<a href="#pantalla2" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-mini ui-icon-alert ui-btn-icon-top">Reportar Problema</a>		
+		</div>    
+	</div>	
+	
+	<div id="Contenedor_map_canvas">
+		<div id="map_canvas"></div>
+	</div>
+	
+</div>
+
+<!-- Pagina 2 -->
+
+<div data-role="page" id="pantalla2">      
+	
+	<div id="Header" data-role="header">    
+		<h1>Inspección Móvil</h1>
+	</div>
+
+	<button onclick="tomarFoto()" id="B"> Tomar Foto </button>
+
+	<div id="Contenedor_imagenCapturada">
+		<img id="imagenCapturada" src="" />		
+	</div>
+	
+	<button onclick="EnviarFoto()"> Enviar Foto </button>	
+	
+	<div id="Contenedor_BtnVolver">
+		<a id="BtnVolver" href="#" class="ui-shadow ui-btn ui-corner-all ui-icon-arrow-l ui-btn-icon-left" data-rel="back" > Volver </a>
+	</div>
+</div>
+
     </body>
 </html>
