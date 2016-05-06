@@ -8,10 +8,73 @@
 			<script src="js/jquery.js"></script>
 			<script src="js/jquery.mobile-1.4.5.min.js"></script>
 			
-			<title>Multa Ciudadana</title>
+			<title>InspeccionMovil</title>			
 			
-			<style type="text/css">            
-            #map_canvas { width:100%; height:300px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);}			
+			<style type="text/css">
+			#Home	{
+						background-color:#fff;
+					}
+			
+			#Header {
+						background-color:#61c1df;
+					}
+							
+            #Contenedor_ImgInicio	{
+								position: absolute;
+								width: 80%;
+								height: 60%;
+								background-color:#fff;
+							}					
+
+			#ImgInicio	{														
+								width: auto;
+								height : auto;
+								max-height: 100%;
+								max-width: 100%;										
+							}	
+							
+			#Contenedor_MenuHome	{
+							float: right;							
+							margin-top: 60%;
+							width:150px;							
+							z-index: 2;
+						}
+			
+			#MenuHome	{
+						
+						}
+			
+			
+			#Contenedor_map_canvas	{
+							position: fixed;
+							bottom: 1px;
+							width:100%; 
+							height:180px; 							
+						}
+			
+			#map_canvas { 
+							width:100%; 
+							height:180px; 														
+						}
+			
+			#Contenedor_imagenCapturada	{								
+								width: 80%;
+								height: 80%;
+								background-color:#fff;
+							}
+
+			#imagenCapturada	{														
+									width: auto;
+									height : auto;
+									max-height: 100%;
+									max-width: 100%;										
+								}				
+			
+			#Contenedor_BtnVolver	{
+							position: fixed;
+							bottom: 10px;
+						}
+			
             </style>
 			
             <script>
@@ -21,9 +84,6 @@
 			
 			// Conexion de Cordova con dispositivo
             document.addEventListener("deviceready", dispositivoListo, false);
-			
-			var MiCarpeta = 'FotosMulta';			
-			var _fp
 			
 				var _root
                 var _workingFolder
@@ -43,43 +103,15 @@
                     _root = fileSystem.root
 					//_fp = fileSystem.root.toNativeURL();
                 }
-				
-
-				
-                function copiarFoto() {							
-                    window.resolveLocalFileSystemURI(_imagePath,function(fileEntry){
-
-					alert(_imagePath)
-					alert(_workingFolder)
-							fileEntry.copyTo(_workingFolder , "Multa"+ Math.random() +".jpg" ,function(e){                                                   
-											_localImagePath = e;
-											
-											alert(_localImagePath)
-											
-											var imagen = document.getElementById("imagenGuardada")
-											imagen.src = _localImagePath.fullPath;
-											
-											alert(_localImagePath.fullPath)
-											
-											alert("ruta de guardado" + _localImagePath.fullPath)
-											} , function(e){ alert(e)});
 							
-							
-							
-							},
-							function(je){alert("fallo en la escritura"+je.code)}  );
-					
-                }				 
 				 				
-//CAMARA ///////////////////////////////////////////////////////////////
+		//CAMARA ///////////////////////////////////////////////////////////////
 				function tomarFoto(){
                     navigator.camera.getPicture(mostrarFoto, error, { 
 					quality : 80, 
 					destinationType : Camera.DestinationType.FILE_URI,   
-					sourceType : Camera.PictureSourceType.CAMERA,   
-					allowEdit : true,  
-					encodingType: Camera.EncodingType.JPEG,  
-					targetWidth: 100,  targetHeight: 100 } );
+					sourceType : Camera.PictureSourceType.CAMERA
+					} );
                 }
 			
 				function error(message) {
@@ -88,25 +120,19 @@
                                              
                 function mostrarFoto(param){
                     
-                    var imagen = document.getElementById("imagen")
+                    var imagen = document.getElementById("imagenCapturada")
                     imagen.src = param;
                     _imagePath = param;
-					alert(param)
-                    
+					//alert(param)                  
                 }
 				
-// Abre galería de fotos
-				function AbreGaleria(){
-					navigator.camera.getPicture(mostrarFoto, error, { 
-						quality: 80,
-						sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
-						targetWidth: 200,  targetHeight: 200,
-						destinationType: Camera.DestinationType.FILE_URI});
-
-				}		
-
+				function EnviarFoto(){                    					
+					mostrarUbicacion();
+					//var imagen = document.getElementById("imagenCapturada")                    
+					//alert(imagen.src);
+                }
 	
-// CONEXION ///////////////////////////////////////////////////////////////
+			// CONEXION ///////////////////////////////////////////////////////////////
 
                 function mostrarConexion() {
                         
@@ -171,69 +197,54 @@
 	
     </head>
     <body onLoad="initialize()" >
-	
-<div align="center" data-role="page" id="inicio" style="background-color:#7a0505;">	
 
-	<div data-role="header" style="background-color:#d17272;">    
-		<h1>Multa Ciudadana</h1>
+<!-- HOME -->
+	
+<div id="Home" data-role="page" >	
+
+	<div data-role="header">    
+		<h1>Inspección Móvil</h1>
 	</div>
 	
-	<div id="map_canvas"></div>
+	<div id="Contenedor_ImgInicio">
+		
+			<img id="ImgInicio" src="img/Banio_Inicio.gif"/>
+		
+	</div>
 	
-	<a href="#" class="ui-shadow ui-btn ui-corner-all ui-icon-recycle ui-btn-icon-notext" onClick="mostrarUbicacion()">Actualizar</a>
-
-	<div id="MenuPrincipal" style="width:95%;">			
-		<div id="menubotones">
-		<a href="#pantalla2" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-icon-alert ui-btn-icon-top" style="width:120px;">Multa Ciudadana</a>
-		<a href="#pantalla2" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-icon-star ui-btn-icon-top" style="width:120px">SIIF</a>
-		<a href="#pantalla2" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-icon-comment ui-btn-icon-top" style="width:120px">Comentarios</a>
-		<a href="#pantalla2" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-icon-info ui-btn-icon-top" style="width:120px">Ayuda</a>	
+	<div id="Contenedor_MenuHome">			
+		<div id="MenuHome">
+			<a href="#pantalla2" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-mini ui-icon-search ui-btn-icon-top">Registrar Inspección</a>
+			<a href="#pantalla2" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-mini ui-icon-alert ui-btn-icon-top">Reportar Problema</a>		
 		</div>    
+	</div>	
+	
+	<div id="Contenedor_map_canvas">
+		<div id="map_canvas"></div>
 	</div>
-
+	
 </div>
+
+<!-- Pagina 2 -->
 
 <div data-role="page" id="pantalla2">      
-	<div data-role="header" style="background-color:#9accff;">    
-		<h1>Multa Ciudadana</h1>
+	
+	<div id="Header" data-role="header">    
+		<h1>Inspección Móvil</h1>
 	</div>
 
-	<div data-demo-html="true">
-        <fieldset data-role="controlgroup">                    
-			<input type="radio" name="radio-choice-1" id="radio-choice-1" value="choice-1" checked="checked">
-			<label for="radio-choice-1">Reportar Bache</label>
-	
-			<input type="radio" name="radio-choice-1" id="radio-choice-2" value="choice-2">
-			<label for="radio-choice-2">Tránsito</label>
-	
-			<input type="radio" name="radio-choice-1" id="radio-choice-3" value="choice-3">
-			<label for="radio-choice-3">Salud</label>
-	
-			<input type="radio" name="radio-choice-1" id="radio-choice-4" value="choice-4">
-			<label for="radio-choice-4">Forestal</label>
-        </fieldset>
-       </div><!-- /demo-html -->
+	<button onclick="tomarFoto()" id="B"> Tomar Foto </button>
 
-<button onclick="tomarFoto()" id="B"> Tomar Foto </button>
-<button onclick="AbreGaleria()" id="T">Cargar Foto </button>
-
-	<div>	
-    <img id="imagen" src="" />	
-	<button onclick="copiarFoto()"> Enviar Foto </button>
-	<img id="imagenGuardada" src="" />
+	<div id="Contenedor_imagenCapturada">
+		<img id="imagenCapturada" src="" />		
 	</div>
-
-<a href="#" class="ui-shadow ui-btn ui-corner-all ui-icon-arrow-l ui-btn-icon-left" data-rel="back" > Volver </a>
+	
+	<button onclick="EnviarFoto()"> Enviar Foto </button>	
+	
+	<div id="Contenedor_BtnVolver">
+		<a id="BtnVolver" href="#" class="ui-shadow ui-btn ui-corner-all ui-icon-arrow-l ui-btn-icon-left" data-rel="back" > Volver </a>
+	</div>
 </div>
 
-
-<!--
-	<div>
-		<h3>Ubicación del dispositivo</h3>  
-		<button onClick="initialize()">  Ver Mapa</button> 
-		<div id="map_canvas"></div> 
-		<button onClick="mostrarUbicacion()"> Actualizar Ubicación</button>
-	</div>
--->	
     </body>
 </html>
