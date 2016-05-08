@@ -79,70 +79,26 @@
 			
             <script>
 
-			var pictureSource; 
-            var destinationType;
-			
-			// Conexion de Cordova con dispositivo
-            document.addEventListener("DOMContentLoaded", dispositivoListo, false);
-			
-				var _root
-                var _workingFolder
-                var _imagePath
-                var _localImagePath
-	 
-                 function dispositivoListo(){                     
-					 window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, accesoFS, error);
-                 }
-				 				 
-                function accesoFS(fileSystem) {
-					var directoryEntry = fileSystem.root;
-                    directoryEntry.getDirectory(MiCarpeta, {create: true, exclusive: false},function(myfolder){                                                 
-                                                 _workingFolder = myfolder;	
-                                                 })
-                    
-                    _root = fileSystem.root
-					//_fp = fileSystem.root.toNativeURL();
-                }
-							
-				 				
-		//CAMARA ///////////////////////////////////////////////////////////////
-				function tomarFoto(){
-                    navigator.camera.getPicture(mostrarFoto, error, { 
-					quality : 80, 
-					destinationType : Camera.DestinationType.FILE_URI,   
-					sourceType : Camera.PictureSourceType.CAMERA
-					} );
-                }
-			
-				function error(message) {
-                    alert('error al cargar la imagen: ' + message);
-                }
-                                             
-                function mostrarFoto(param){
-                    
-                    var imagen = document.getElementById("imagenCapturada")
-                    imagen.src = param;
-                    _imagePath = param;
-					//alert(param)                  
-                }
-				
-				function EnviarFoto(){                    					
-					mostrarUbicacion();
-					//var imagen = document.getElementById("imagenCapturada")                    
-					//alert(imagen.src);
-                }
-	
-			// CONEXION ///////////////////////////////////////////////////////////////
-
-                function mostrarConexion() {
-                        
-                        var networkState = navigator.network.connection.type;
-                        
-                        if (networkState == Connection.NONE){
-                            alert("no hay conexion a internet")
-                        }
-                } 
+			 document.addEventListener("deviceready", onDeviceReady, false);
+            function onDeviceReady() {
+                //solicita acceso al filesystem
                 
+                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, accesoFS);
+            }
+            
+            // tenemos acceso al filesystem
+            function accesoFS(fileSystem) {
+                
+                // busca o crea el directorio 
+                fileSystem.root.getFile("manualDelGuerreroMovil.txt", {create: true, exclusive: false},function(myFile){
+                                        
+                                        myFile.createWriter( function(escritor){
+                                                            escritor.write("hola mundo!!!")
+                                                            })
+                                        
+                                        }, function(){alert("fallo")})
+                
+            }
             </script>
 
 			<!-- API GoogleMaps -->
