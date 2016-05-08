@@ -1,206 +1,33 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">            
-            
-			<link rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.5.min.css">
-			
-			<script src="js/jquery.js"></script>
-			<script src="js/jquery.mobile-1.4.5.min.js"></script>
-			
-			<title>InspeccionMovil</title>			
-			
-			<style type="text/css">
-			#Home	{
-						background-color:#fff;
-					}
-			
-			#Header {
-						background-color:#61c1df;
-					}
-							
-            #Contenedor_ImgInicio	{
-								position: absolute;
-								width: 80%;
-								height: 60%;
-								background-color:#fff;
-							}					
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title></title>
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" type="text/css" href="css/app.css" />
+        <style>
+        button {
+        	width: 90%;
+        }
+        body {
+        	margin-top: 50px;
+        }
+        img {
+        	max-width: 100%;
+        	max-height: 250px;
+        }
+        </style>
+	</head>
+	<body>
 
-			#ImgInicio	{														
-								width: auto;
-								height : auto;
-								max-height: 100%;
-								max-width: 100%;										
-							}	
-							
-			#Contenedor_MenuHome	{
-							float: right;							
-							margin-top: 60%;
-							width:150px;							
-							z-index: 2;
-						}
-			
-			#MenuHome	{
-						
-						}
-			
-			
-			#Contenedor_map_canvas	{
-							position: fixed;
-							bottom: 1px;
-							width:100%; 
-							height:180px; 							
-						}
-			
-			#map_canvas { 
-							width:100%; 
-							height:180px; 														
-						}
-			
-			#Contenedor_imagenCapturada	{								
-								width: 80%;
-								height: 80%;
-								background-color:#fff;
-							}
+	<img id="myImage">
 
-			#imagenCapturada	{														
-									width: auto;
-									height : auto;
-									max-height: 100%;
-									max-width: 100%;										
-								}				
-			
-			#Contenedor_BtnVolver	{
-							position: fixed;
-							bottom: 10px;
-						}
-			
-            </style>
-			
-            <script>
+	<button id="takePicture">Take Picture</button>
+	<button id="usePicture">Use Picture</button>
 
-			 document.addEventListener("deviceready", onDeviceReady, false);
-            function onDeviceReady() {
-                //solicita acceso al filesystem
-                
-                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, accesoFS);
-            }
-            
-            // tenemos acceso al filesystem
-            function accesoFS(fileSystem) {
-                
-                // busca o crea el directorio 
-                fileSystem.root.getFile("manualDelGuerreroMovil.txt", {create: true, exclusive: false},function(myFile){
-                                        
-                                        myFile.createWriter( function(escritor){
-                                                            escritor.write("hola mundo!!!")
-                                                            })
-                                        
-                                        }, function(){alert("fallo")})
-                
-            }
-            </script>
-
-			<!-- API GoogleMaps -->
-			<script type="text/javascript" 
-			src="http://maps.googleapis.com/maps/api/js?sensor=true">
-			</script>
-
-			<!-- Geolocalización -->	
-			<script type="text/javascript">
-            
-            var map
-            var marcador
-            
-            function initialize() {
-                var latlng = new google.maps.LatLng(25.50, -100.975);
-                var myOptions = {
-                    zoom: 12,
-                    center: latlng,
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
-                };
-                map = new google.maps.Map(document.getElementById("map_canvas"),
-                                          myOptions);
-                
-                
-                marcador = new google.maps.Marker( {
-                                                  position: latlng,
-                                                  map:map   
-                                                  })
-												  
-				navigator.geolocation.getCurrentPosition( lecturaGPS , errorGPS , {enableHighAccuracy:true} )
-            }
-            
-            function mostrarUbicacion(){
-                navigator.geolocation.getCurrentPosition( lecturaGPS , errorGPS , {enableHighAccuracy:true} )
-            }
-            
-            function lecturaGPS(ubicacion){
-                
-                var miubicacion = new google.maps.LatLng(ubicacion.coords.latitude, ubicacion.coords.longitude);
-                
-                map.setCenter(miubicacion)
-                marcador.setPosition(miubicacion)
-                alert(" Ubicacion" + miubicacion)
-            }
-            
-            function errorGPS(){
-                alert(" no puedo encontrarte :(")
-            }
-             
-            </script> 
-			
-	
-    </head>
-    <body onLoad="initialize()" >
-
-<!-- HOME -->
-	
-<div id="Home" data-role="page" >	
-
-	<div data-role="header">    
-		<h1>Inspección Móvil</h1>
-	</div>
-	
-	<div id="Contenedor_ImgInicio">
-		
-			<img id="ImgInicio" src="img/Banio_Inicio.gif"/>
-		
-	</div>
-	
-	<div id="Contenedor_MenuHome">			
-		<div id="MenuHome">
-			<a href="#pantalla2" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-mini ui-icon-search ui-btn-icon-top">Registrar Inspección</a>
-			<a href="#pantalla2" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-mini ui-icon-alert ui-btn-icon-top">Reportar Problema</a>		
-		</div>    
-	</div>	
-	
-	<div id="Contenedor_map_canvas">
-		<div id="map_canvas"></div>
-	</div>
-	
-</div>
-
-<!-- Pagina 2 -->
-
-<div data-role="page" id="pantalla2">      
-	
-	<div id="Header" data-role="header">    
-		<h1>Inspección Móvil</h1>
-	</div>
-
-	<button onclick="tomarFoto()" id="B"> Tomar Foto </button>
-
-	<div id="Contenedor_imagenCapturada">
-		<img id="imagenCapturada" src="" />		
-	</div>
-	
-	<button onclick="EnviarFoto()"> Enviar Foto </button>	
-	
-	<div id="Contenedor_BtnVolver">
-		<a id="BtnVolver" href="#" class="ui-shadow ui-btn ui-corner-all ui-icon-arrow-l ui-btn-icon-left" data-rel="back" > Volver </a>
-	</div>
-</div>
-
-    </body>
+	<script src="cordova.js"></script>	
+	<script src="js/app.js"></script>
+	</body>
 </html>
